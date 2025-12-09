@@ -1,8 +1,9 @@
 #!/bin/bash
 
-exp_name="test_isic"
+exp_name="test_lucchi"
 sam_ckpt_path="/mnt/geminisgceph1/geminicephfs/mmsearch-luban-universal/group_semantic_video/user_williamvvli/pre_experiment/mitochondria_segmentation/model/sam_vit_b_01ec64.pth"
-data_path="/mnt/geminisgceph1/geminicephfs/mmsearch-luban-universal/group_semantic_video/user_williamvvli/pre_experiment/mitochondria_segmentation/data/ISIC"
+# data_path="/mnt/geminisgceph1/geminicephfs/mmsearch-luban-universal/group_semantic_video/user_williamvvli/pre_experiment/mitochondria_segmentation/data/ISIC"
+data_path="/mnt/nasv3/liyuanwei/ReseachTask/mitochrondria_segmentation/data/Lucchi++_crop512"
 
 cd /mnt/geminisgceph1/geminicephfs/mmsearch-luban-universal/group_semantic_video/user_williamvvli/pre_experiment/mitochondria_segmentation/code/Medical-SAM-Adapter
 

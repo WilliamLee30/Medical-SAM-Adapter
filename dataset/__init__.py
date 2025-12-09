@@ -18,6 +18,7 @@ from .segrap import SegRap
 from .stare import STARE
 from .toothfairy import ToothFairy
 from .wbc import WBC
+from .lucchi import Lucchi
 
 
 def get_dataloader(args):
@@ -47,6 +48,14 @@ def get_dataloader(args):
         '''isic data'''
         isic_train_dataset = ISIC2016(args, args.data_path, transform = transform_train, transform_msk= transform_train_seg, mode = 'Training')
         isic_test_dataset = ISIC2016(args, args.data_path, transform = transform_test, transform_msk= transform_test_seg, mode = 'Test')
+
+        nice_train_loader = DataLoader(isic_train_dataset, batch_size=args.b, shuffle=True, num_workers=8, pin_memory=True)
+        nice_test_loader = DataLoader(isic_test_dataset, batch_size=args.b, shuffle=False, num_workers=8, pin_memory=True)
+        '''end'''
+    if args.dataset == 'Lucchi':
+        '''Lucchi++_crop512 data'''
+        isic_train_dataset = Lucchi(args, args.data_path, transform = transform_train, transform_msk= transform_train_seg, mode = 'Train')
+        isic_test_dataset = Lucchi(args, args.data_path, transform = transform_test, transform_msk= transform_test_seg, mode = 'Test')
 
         nice_train_loader = DataLoader(isic_train_dataset, batch_size=args.b, shuffle=True, num_workers=8, pin_memory=True)
         nice_test_loader = DataLoader(isic_test_dataset, batch_size=args.b, shuffle=False, num_workers=8, pin_memory=True)
