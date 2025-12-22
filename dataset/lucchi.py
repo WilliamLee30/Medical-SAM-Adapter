@@ -5,8 +5,9 @@ import pandas as pd
 import torch
 from PIL import Image
 from torch.utils.data import Dataset
-
+from torchvision import transforms
 from utils import random_box, random_click
+import random
 
 
 class Lucchi(Dataset):
@@ -16,23 +17,27 @@ class Lucchi(Dataset):
         self.mode = mode
 
         self.input_image_path = os.path.join(self.data_path, self.mode, "input_image")
-        self.input_image_list = os.listdir(self.input_image_path)
+        self.input_image_list = sorted(os.listdir(self.input_image_path))
 
-        self.binary_mask_path =  os.path.join(self.data_path, self.mode, "binary_mask")
-        self.binary_mask_list = os.listdir(self.binary_mask_path)
+        # self.binary_mask_path =  os.path.join(self.data_path, self.mode, "binary_mask")
+        self.binary_mask_path =  os.path.join(self.data_path, self.mode, "single_point_0logit")
+        self.binary_mask_list = sorted(os.listdir(self.binary_mask_path))
 
         self.centroid_path =  os.path.join(self.data_path, self.mode, "point_label", "centroid")
-        self.centroid_list = os.listdir(self.centroid_path)
+        self.centroid_list = sorted(os.listdir(self.centroid_path))
 
         self.centroid_label_path =  os.path.join(self.data_path, self.mode, "point_label", "label")
-        self.centroid_label_list = os.listdir(self.centroid_label_path)
+        self.centroid_label_list = sorted(os.listdir(self.centroid_label_path))
 
 
         self.prompt = prompt
 
-        # 对图像和mask的分辨率进行resize-deprecated-20251209
-        self.transform = transform
-        self.transform_msk = transform_msk
+        self.transform = transform if transform is not None else transforms.Compose([
+            transforms.ToTensor(), # 将 PIL Image 转换为 [0, 1] 的 Tensor
+            transforms.Lambda(lambda x: x * 255)
+        ])
+        
+        self.transform_msk = transform_msk if transform_msk is not None else transforms.ToTensor()
 
     def __len__(self):
         return len(self.input_image_list)
@@ -64,13 +69,26 @@ class Lucchi(Dataset):
         centroid_label_list_array = np.load(centroid_label_path)
         centroid_label_list = centroid_label_list_array.tolist()
 
+        # 仅选取一个点和标签
+        n = len(centroid_list)
+        random_index = random.randrange(n)
+        single_pt = centroid_list[random_index]
+        single_label = centroid_label_list[random_index]
+        single_pt_tensor = torch.tensor(single_pt, dtype=torch.int64) 
+        single_label_tensor = torch.tensor(single_label, dtype=torch.int64)
+
+        # 转换为tensor
+        img_tensor = self.transform(img)
+        mask_tensor = self.transform_msk(mask).int()
+
                 
-        name = input_image_name.split(".jpg")[0]
+        name = input_image_name.split(".png")[0]
         image_meta_dict = {'filename_or_obj':name}
+
         return {
-            'image':img,
-            'label': mask,
-            'p_label':centroid_label_list,
-            'pt':centroid_list,
+            'image':img_tensor,
+            'label': mask_tensor,
+            'p_label':single_label_tensor,
+            'pt':single_pt_tensor,
             'image_meta_dict':image_meta_dict,
         }

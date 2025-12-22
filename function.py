@@ -255,6 +255,13 @@ def validation_sam(args, val_loader, epoch, net: nn.Module, clean_dir=True):
             else:
                 ptw = pack['pt']
                 point_labels = pack['p_label']
+                # print("="*100)
+                # print("ptw", ptw)
+                # print("ptw.dtype", ptw.dtype)
+                # print("point_labels", point_labels)
+                # print("point_labels.dtype", point_labels.dtype)
+                # print("="*100)
+
             name = pack['image_meta_dict']['filename_or_obj']
             
             buoy = 0

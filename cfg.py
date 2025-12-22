@@ -53,6 +53,11 @@ def parse_args():
     help='The path of segmentation data')
     # '../dataset/RIGA/DiscRegion'
     # '../dataset/ISIC'
+    parser.add_argument(
+    '-project_name',
+    type=str,
+    default='mitochondria_segmentation',
+    help='The name of your SwanLab project')
     opt = parser.parse_args()
 
     return opt
